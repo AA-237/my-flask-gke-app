@@ -1,0 +1,40 @@
+# k8s-manifests.yaml
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-flask-app-deployment
+  labels:
+    app: my-flask-app
+spec:
+  replicas: 2 # We want 2 instances of our application running
+  selector:
+    matchLabels:
+      app: my-flask-app
+  template:
+    metadata:
+      labels:
+        app: my-flask-app
+    spec:
+      containers:
+      - name: my-flask-app-container
+        # Replace YOUR_PROJECT_ID with your actual Google Cloud Project ID
+        image: us-central1-docker.pkg.dev/anderson-sre-465021/sre-training-repo/my-flask-app:v1.1
+        ports:
+        - containerPort: 8080 # The port our Flask app listens on
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-flask-app-service
+spec:
+  selector:
+    app: my-flask-app # Selects Pods with this label
+  type: LoadBalancer # Exposes the service externally using a cloud load balancer
+  ports:
+    - protocol: TCP
+      port: 80 # The port the service listens on
+      targetPort: 8080 # The port on the Pods to forward traffic to
+
+
