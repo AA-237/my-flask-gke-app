@@ -1,5 +1,3 @@
-# k8s-manifests.yaml
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -8,7 +6,7 @@ metadata:
   labels:
     app: my-flask-app
 spec:
-  replicas: 2 # We want 2 instances of our application running
+  replicas: 2
   selector:
     matchLabels:
       app: my-flask-app
@@ -16,25 +14,43 @@ spec:
     metadata:
       labels:
         app: my-flask-app
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
     spec:
       containers:
       - name: my-flask-app-container
-        # Replace YOUR_PROJECT_ID with your actual Google Cloud Project ID
-        image: us-central1-docker.pkg.dev/anderson-sre-465021/sre-training-repo/my-flask-app:v1.1
+        image: us-central1-docker.pkg.dev/anderson-sre-465021/sre-training-repo/my-flask-app:v1.14
         ports:
-        - containerPort: 8080 # The port our Flask app listens on
+        - containerPort: 8080
+        env:
+        - name: OTEL_EXPORTER_OTLP_ENDPOINT
+          value: "https://trace.googleapis.com:4317"
+        - name: OTEL_EXPORTER_OTLP_INSECURE
+          value: "false"
+        - name: OTEL_EXPORTER_OTLP_PROTOCOL
+          value: "grpc"
+        - name: OTEL_TRACES_EXPORTER
+          value: "otlp"
+        - name: OTEL_METRICS_EXPORTER
+          value: "none"
+        - name: GOOGLE_CLOUD_PROJECT
+          value: "anderson-sre-465021"
+        - name: OTEL_LOG_LEVEL
+          value: "debug"
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: my-flask-app-service
+  labels:
+    app: my-flask-app
 spec:
   selector:
-    app: my-flask-app # Selects Pods with this label
-  type: LoadBalancer # Exposes the service externally using a cloud load balancer
+    app: my-flask-app
+  type: LoadBalancer
   ports:
     - protocol: TCP
-      port: 80 # The port the service listens on
-      targetPort: 8080 # The port on the Pods to forward traffic to
-
-
+      port: 80
+      targetPort: 8080

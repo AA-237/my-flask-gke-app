@@ -1,0 +1,14 @@
+apiVersion: monitoring.googleapis.com/v1
+kind: PodMonitoring
+metadata:
+  name: my-flask-app-pod-monitoring
+  labels:
+    app: my-flask-app
+spec:
+  selector:
+    matchLabels:
+      app: my-flask-app
+  endpoints:
+  - port: 8080
+    path: /metrics
+    interval: 30s

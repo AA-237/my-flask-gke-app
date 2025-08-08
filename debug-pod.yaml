@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-flask-debug-pod
+  labels:
+    app: debug
+spec:
+  containers:
+  - name: debug-container
+    image: us-central1-docker.pkg.dev/anderson-sre-465021/sre-training-repo/my-flask-app:v1.10 # <--- ENSURE THIS IS YOUR LATEST IMAGE TAG!
+    command: ["sleep"]
+    args: ["infinity"]
+    ports:
+    - containerPort: 8080 # Still useful to expose for consistency
+  restartPolicy: Never # Crucial: Don't restart if it exits prematurely
