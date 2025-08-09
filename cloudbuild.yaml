@@ -38,6 +38,6 @@ steps:
 # No env variables needed for zone since cluster is regional
 
 # Optionally, you can specify a timeout if builds take longer (uncomment if needed)
- timeout: '1200s'  # 20 minutes
+# timeout: '1200s'  # 20 minutes
 
 # No substitutions block needed because we are using Cloud Build's built-in ${SHORT_SHA}
