@@ -18,6 +18,9 @@ steps:
   # Step 3: Get GKE credentials for kubectl
   - name: 'gcr.io/cloud-builders/gcloud'
     id: Get GKE Credentials
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=sre-training-cluster'
     args:
       - 'container'
       - 'clusters'
