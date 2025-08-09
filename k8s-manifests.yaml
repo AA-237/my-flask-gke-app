@@ -39,6 +39,19 @@ spec:
           value: "anderson-sre-465021"
         - name: OTEL_LOG_LEVEL
           value: "debug"
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+            ephemeral-storage: 500Mi
+          limits:
+            cpu: 500m
+            memory: 1Gi
+            ephemeral-storage: 1Gi
+      tolerations:
+      - key: "cloud.google.com/gke-quick-remove"
+        operator: "Exists"
+        effect: "NoSchedule"
 ---
 apiVersion: v1
 kind: Service
