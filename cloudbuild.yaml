@@ -1,36 +1,20 @@
 steps:
-  # Step 1: Build Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Build
-    args:
-      - 'build'
-      - '-t'
-      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}'
-      - '.'
+  # ... previous steps
 
-  # Step 2: Push Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Push
-    args:
-      - 'push'
-      - 'us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}'
-
-  # Step 3: Get GKE credentials
   - name: 'gcr.io/cloud-builders/gcloud'
     id: Get GKE Credentials
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=sre-training-cluster'
-      - 'CLOUDSDK_PROJECT=${PROJECT_ID}'
+      - 'CLOUDSDK_PROJECT=${PROJECT_ID}'  # PROJECT_ID is a built-in substitution, can use here
     args:
       - 'container'
       - 'clusters'
       - 'get-credentials'
-      - '${CLOUDSDK_CONTAINER_CLUSTER}'
-      - '--region=${CLOUDSDK_COMPUTE_REGION}'
-      - '--project=${CLOUDSDK_PROJECT}'
+      - 'sre-training-cluster'
+      - '--region=us-central1'
+      - '--project=${PROJECT_ID}'
 
-  # Step 4: Deploy to GKE
   - name: 'gcr.io/cloud-builders/kubectl'
     id: Deploy to GKE
     env:
@@ -42,6 +26,3 @@ steps:
       - 'image'
       - 'deployment/my-flask-app-deployment'
       - 'my-flask-app-container=us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
