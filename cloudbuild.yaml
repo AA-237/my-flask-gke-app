@@ -35,9 +35,9 @@ steps:
       - 'deployment/my-flask-app-deployment'
       - 'my-flask-app-container=us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}'
 
-# No env variables needed for zone since cluster is regional
+# Logging option added here
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 # Optionally, you can specify a timeout if builds take longer (uncomment if needed)
 # timeout: '1200s'  # 20 minutes
-
-# No substitutions block needed because we are using Cloud Build's built-in ${SHORT_SHA}
