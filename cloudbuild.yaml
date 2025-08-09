@@ -15,32 +15,18 @@ steps:
       - 'push'
       - 'us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}'
 
-  # Step 3: Get GKE credentials for kubectl
+  # Step 3 & 4 combined: Get credentials AND deploy
   - name: 'gcr.io/cloud-builders/gcloud'
-    id: Get GKE Credentials
+    id: Deploy to GKE
     env:
       - 'CLOUDSDK_COMPUTE_REGION=us-central1'
       - 'CLOUDSDK_CONTAINER_CLUSTER=sre-training-cluster'
+    entrypoint: 'bash'
     args:
-      - 'container'
-      - 'clusters'
-      - 'get-credentials'
-      - 'sre-training-cluster'
-      - '--region=us-central1'
-      - '--project=${PROJECT_ID}'
+      - '-c'
+      - |
+        gcloud container clusters get-credentials sre-training-cluster --region=us-central1 --project=${PROJECT_ID}
+        kubectl set image deployment/my-flask-app-deployment my-flask-app-container=us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}
 
-  # Step 4: Deploy to GKE by updating the image in the deployment
-  - name: 'gcr.io/cloud-builders/kubectl'
-    id: Deploy to GKE
-    args:
-      - 'set'
-      - 'image'
-      - 'deployment/my-flask-app-deployment'
-      - 'my-flask-app-container=us-central1-docker.pkg.dev/${PROJECT_ID}/sre-training-repo/my-flask-app:${SHORT_SHA}'
-
-# Add this section to fix the logging error:
 options:
   logging: CLOUD_LOGGING_ONLY
-
-# Optionally, you can specify a timeout if builds take longer (uncomment if needed)
-# timeout: '1200s'  # 20 minutes
