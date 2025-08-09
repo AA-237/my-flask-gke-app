@@ -76,7 +76,7 @@ def hello():
             span.set_attribute("http.method", method)
             span.set_attribute("http.path", endpoint)
 
-            message = "Hello from Flask on GKE! (Version 1.1 with CI/CD)"
+            message = "Hello from Flask on GKE! (Version 1.1 with CI/CD Fixed)"
 
             # Structured logging example (from Week 3)
             log_entry = {
